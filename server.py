@@ -1,4 +1,4 @@
-import socket, pyaudio, wave, argparse, queue, threading
+import socket, pyaudio
 
 # HOST = "192.168.43.118"
 HOST = "localhost"

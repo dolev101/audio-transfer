@@ -1,4 +1,4 @@
-import socket, pyaudio, wave, argparse, queue, threading
+import socket, pyaudio, queue, threading
 
 # HOST = "192.168.43.118"
 from time import sleep
@@ -9,8 +9,6 @@ CHUNK = 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100
-RECORD_SECONDS = 10
-WAVE_OUT_FILENAME = "output.wav"
 BUFFER = 10 * 1024
 
 
@@ -33,10 +31,8 @@ class Client:
 
     def start(self):
         queue_add_thread = threading.Thread(target=self.add_frame)
-        queue_pop_thread = threading.Thread(target=self.send_frames)
-        queue_pop_thread.start()
         queue_add_thread.start()
-        sleep(10000)
+        self.send_frames()
 
     def add_frame(self):
         while True:
