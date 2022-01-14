@@ -32,6 +32,7 @@ class Client:
         for _ in range(total_chunks + 1):
             data = self.stream.read(CHUNK)
             frames.append(data)
+        return frames
 
 
 def main():
