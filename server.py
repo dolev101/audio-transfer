@@ -3,7 +3,7 @@ import socket, pyaudio
 # HOST = "192.168.43.118"
 HOST = "localhost"
 PORT = 5634
-CHUNK = 1024
+CHUNK = 10 * 1024
 FORMAT = pyaudio.paInt16
 CHANNELS = 2
 RATE = 44100

@@ -3,7 +3,7 @@ import socket, pyaudio, queue, threading
 # HOST = "192.168.43.118"
 from time import sleep
 
-HOST = "localhost"
+HOST = "192.168.43.118"
 PORT = 5634
 CHUNK = 1024
 FORMAT = pyaudio.paInt16
