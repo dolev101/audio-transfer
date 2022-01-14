@@ -31,13 +31,6 @@ class Client:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.client_socket.close()
 
-    # def get_frames(self):
-    #     frames = []
-    #     total_chunks = RATE // CHUNK * RECORD_SECONDS
-    #     for _ in range(total_chunks + 1):
-    #         data = self.stream.read(CHUNK)
-    #         frames.append(data)
-    #     return frames
     def start(self):
         queue_add_thread = threading.Thread(target=self.add_frame)
         queue_pop_thread = threading.Thread(target=self.send_frames)
