@@ -1,7 +1,7 @@
-import socket, pyaudio, queue, threading
-
+import socket
+import pyaudio
+import asyncio
 # HOST = "192.168.43.118"
-from time import sleep
 
 HOST = "192.168.43.118"
 PORT = 5634
@@ -17,9 +17,8 @@ class Client:
         self.server_hostname = server_hostname
         self.port = port
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, BUFFER)
         self.audio_manager = pyaudio.PyAudio()
-        self.queue = queue.Queue()
+        self.queue = asyncio.Queue()
 
     def __enter__(self):
         self.stream = self.audio_manager.open(format=FORMAT, channels=CHANNELS, rate=RATE,
@@ -29,24 +28,28 @@ class Client:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.client_socket.close()
 
-    def start(self):
-        queue_add_thread = threading.Thread(target=self.add_frame)
-        queue_add_thread.start()
-        self.send_frames()
-
-    def add_frame(self):
+    async def start(self):
         while True:
-            self.queue.put(self.stream.read(CHUNK))
+            await self.add_frame()
+            await self.send_frame()
 
-    def send_frames(self):
-        while True:
-            data = self.queue.get()
-            self.client_socket.sendto(data, (HOST, PORT))
+    async def add_frame(self):
+        await self.queue.put(bytes([b % 256 for b in self.stream.read(CHUNK)]))
+
+    async def send_frame(self):
+        data = await self.queue.get()
+        self.client_socket.sendto(data, (HOST, PORT))
+
+    @staticmethod
+    def clump(i: int, ceiling: int):
+        if i >= ceiling:
+            return ceiling
+        return i
 
 
 def main():
     with Client(HOST, PORT) as client:
-        client.start()
+        asyncio.run(client.start())
 
 
 if __name__ == "__main__":
